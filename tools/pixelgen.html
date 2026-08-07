@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>flaggle.lofi — pixel grid generator</title>
+  </head>
+  <body>
+    <p>Rasterizes every flag into a quantized grid. Driven by tools/gen-pixels.mjs.</p>
+    <canvas id="c"></canvas>
+    <script src="../js/data.js"></script>
+    <script src="../js/palette.js"></script>
+    <script>
+      // Render each cell from SCALE x SCALE source pixels and keep the colour
+      // that wins the vote — averaging instead would smear a star's edges into
+      // orange and lose crisp shapes.
+      var SCALE = 3;
+      var W = window.Palette.GRID_W;
+      var H = window.Palette.GRID_H;
+      var canvas = document.getElementById('c');
+      canvas.width = W * SCALE;
+      canvas.height = H * SCALE;
+      var ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      function loadImage(src) {
+        return new Promise(function (resolve, reject) {
+          var img = new Image();
+          img.onload = function () {
+            resolve(img);
+          };
+          img.onerror = function () {
+            reject(new Error('failed to load ' + src));
+          };
+          img.src = src;
+        });
+      }
+
+      // Every flag has to fill the same 3:2 grid. An SVG with a viewBox honours
+      // preserveAspectRatio="xMidYMid meet" by default, which letterboxes 2:1
+      // flags like Jamaica's and leaves transparent bands that read as white —
+      // so rewrite the root tag to stretch instead.
+      function loadStretched(src) {
+        return fetch(src)
+          .then(function (r) {
+            return r.text();
+          })
+          .then(function (txt) {
+            var patched = txt.replace(/<svg\b([^>]*)>/i, function (m, attrs) {
+              return (
+                '<svg' +
+                attrs.replace(/\spreserveAspectRatio\s*=\s*("[^"]*"|'[^']*')/gi, '') +
+                ' preserveAspectRatio="none">'
+              );
+            });
+            var url = URL.createObjectURL(new Blob([patched], { type: 'image/svg+xml' }));
+            return loadImage(url).then(function (img) {
+              URL.revokeObjectURL(url);
+              return img;
+            });
+          });
+      }
+
+      function gridFor(img) {
+        // Flags are drawn over white so transparent pennants (hello, Nepal)
+        // read as white rather than black.
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        var cells = new Uint8Array(W * H);
+        var counts = new Uint16Array(10);
+        var at = 0;
+        for (var cy = 0; cy < H; cy++) {
+          for (var cx = 0; cx < W; cx++) {
+            counts.fill(0);
+            for (var y = 0; y < SCALE; y++) {
+              var row = (cy * SCALE + y) * canvas.width;
+              for (var x = 0; x < SCALE; x++) {
+                var p = (row + cx * SCALE + x) * 4;
+                counts[window.Palette.quantize(data[p], data[p + 1], data[p + 2])]++;
+              }
+            }
+            var best = 0;
+            for (var i = 1; i < 10; i++) if (counts[i] > counts[best]) best = i;
+            cells[at++] = best;
+          }
+        }
+        return window.Palette.encodeRLE(cells);
+      }
+
+      window.buildBatch = function (start, count) {
+        var slice = window.COUNTRIES.slice(start, start + count);
+        return slice.reduce(function (chain, c) {
+          return chain.then(function (acc) {
+            return loadStretched('../flags/' + c.c + '.svg').then(function (img) {
+              acc[c.c] = gridFor(img);
+              return acc;
+            });
+          });
+        }, Promise.resolve({}));
+      };
+
+      window.total = window.COUNTRIES.length;
+    </script>
+  </body>
+</html>

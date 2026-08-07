@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en" data-theme="latte">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>flaggle.lofi ☕ — guess the flag, slowly</title>
+    <meta name="description" content="A cozy daily flag guessing game with streaks, practice mode and a lofi soundtrack." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <div class="brand">
+          <div class="cup">☕</div>
+          <div>
+            <h1>flaggle<span class="dot">.</span>lofi</h1>
+            <p class="tagline" id="tagline">guess the flag. sip slowly.</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="np">
+            <span class="eq" id="eq"><i></i><i></i><i></i><i></i></span>
+            <span id="np-label">silence</span>
+          </div>
+          <button class="icon-btn" id="btn-sound" title="lofi beats to guess flags to" aria-label="toggle music">🎧</button>
+          <button class="icon-btn" id="btn-rain" title="rain on the window" aria-label="toggle rain">🌧️</button>
+          <button class="icon-btn" id="btn-theme" title="latte / midnight roast" aria-label="toggle theme">🌙</button>
+          <button class="chip" id="btn-profile" title="switch player">☕ <span id="profile-name">you</span></button>
+        </div>
+      </header>
+
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-view="daily" role="tab">🌅 daily</button>
+        <button class="tab" data-view="colours" role="tab">🎨 colours</button>
+        <button class="tab" data-view="practice" role="tab">🎯 practice</button>
+        <button class="tab" data-view="stats" role="tab">📊 stats</button>
+        <button class="tab" data-view="board" role="tab">🏆 leaderboard</button>
+      </nav>
+
+      <!-- ============================= DAILY ============================= -->
+      <section class="view" id="view-daily" role="tabpanel">
+        <div class="card">
+          <div class="card-head">
+            <h2 id="daily-title">today's flag</h2>
+            <div class="row">
+              <button class="chip small" id="btn-steamy" title="the flag starts steamed up and clears as you guess">🌫️ steamy</button>
+              <span class="muted" id="daily-sub"></span>
+            </div>
+          </div>
+
+          <div class="stage">
+            <div class="flag-frame">
+              <img id="daily-flag" alt="mystery flag" />
+            </div>
+            <div class="guess-dots" id="daily-dots"></div>
+
+            <div class="search" id="daily-search">
+              <div class="search-row">
+                <input
+                  type="text"
+                  id="daily-input"
+                  placeholder="which country? ☕"
+                  autocomplete="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  aria-label="country guess"
+                />
+                <button class="btn primary" id="daily-go">guess</button>
+              </div>
+              <div class="suggestions" id="daily-suggestions" hidden></div>
+            </div>
+
+            <button class="btn ghost give-up" id="daily-giveup">🏳️ give up</button>
+          </div>
+
+          <ul class="guesses" id="daily-guesses"></ul>
+
+          <div class="result" id="daily-result" hidden></div>
+        </div>
+      </section>
+
+      <!-- ============================ COLOURS ============================ -->
+      <section class="view" id="view-colours" role="tabpanel" hidden>
+        <div class="card">
+          <div class="card-head">
+            <h2 id="colours-title">today's colours</h2>
+            <span class="muted" id="colours-sub"></span>
+          </div>
+
+          <p class="muted" style="margin-top: 0">
+            You never see this flag. Guess any country, and every part of
+            <em>your</em> flag that happens to be the same colour as the answer lights up
+            <span class="match-chip">green</span>. No distance, no direction — just colour. Take as
+            many tries as you need. 🎨
+          </p>
+
+          <div class="stage">
+            <div class="pair-stage" id="colours-pair">
+              <figure class="pair-item">
+                <div class="flag-frame">
+                  <img id="colours-guess-flag" alt="your guess" hidden />
+                  <div class="veil" id="colours-guess-veil">
+                    <span class="veil-mark">🏳️</span>
+                    <span class="veil-text">your guess appears here</span>
+                  </div>
+                </div>
+                <figcaption id="colours-guess-cap">your guess</figcaption>
+              </figure>
+              <figure class="pair-item">
+                <div class="flag-frame">
+                  <canvas id="colours-canvas" class="pixel-canvas" hidden></canvas>
+                  <div class="veil" id="colours-result-veil">
+                    <span class="veil-mark">🎨</span>
+                    <span class="veil-text">green marks the colours you got right</span>
+                  </div>
+                </div>
+                <figcaption id="colours-result-cap">your result</figcaption>
+              </figure>
+            </div>
+
+            <div class="tries-row" id="colours-tries"></div>
+
+            <div class="search" id="colours-search">
+              <div class="search-row">
+                <input
+                  type="text"
+                  id="colours-input"
+                  placeholder="guess any flag 🎨"
+                  autocomplete="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  aria-label="country guess"
+                />
+                <button class="btn primary" id="colours-go">guess</button>
+              </div>
+              <div class="suggestions" id="colours-suggestions" hidden></div>
+            </div>
+
+            <button class="btn ghost give-up" id="colours-giveup">🏳️ give up</button>
+          </div>
+
+          <ul class="guesses" id="colours-guesses"></ul>
+          <div class="result" id="colours-result" hidden></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>the ten colours 🎨</h2>
+            <span class="muted">every flag is squashed into these</span>
+          </div>
+          <div class="swatches" id="colours-legend"></div>
+        </div>
+      </section>
+
+      <!-- ============================ PRACTICE =========================== -->
+      <section class="view" id="view-practice" role="tabpanel" hidden>
+        <div class="card">
+          <div class="card-head">
+            <h2>practice 🎯</h2>
+            <span class="muted">endless flags, no pressure — still counts toward your flag stats</span>
+          </div>
+
+          <div class="filters" id="practice-filters"></div>
+          <div class="row" style="margin-bottom: 14px">
+            <button class="chip small" id="btn-style-geo" title="see the flag, get distance and direction">🌍 geo hints</button>
+            <button class="chip small" id="btn-style-colour" title="flag hidden, colour matches only">🎨 colours</button>
+            <button class="chip small" id="btn-smart" title="serve the flags you miss most, more often">🧠 weak spots</button>
+            <span class="faint" id="practice-pool"></span>
+          </div>
+
+          <div class="stage">
+            <div class="flag-frame" id="practice-single">
+              <img id="practice-flag" alt="practice flag" />
+            </div>
+
+            <div class="pair-stage" id="practice-pair" hidden>
+              <figure class="pair-item">
+                <div class="flag-frame">
+                  <img id="practice-guess-flag" alt="your guess" hidden />
+                  <div class="veil" id="practice-guess-veil">
+                    <span class="veil-mark">🏳️</span>
+                    <span class="veil-text">your guess appears here</span>
+                  </div>
+                </div>
+                <figcaption id="practice-guess-cap">your guess</figcaption>
+              </figure>
+              <figure class="pair-item">
+                <div class="flag-frame">
+                  <canvas id="practice-canvas" class="pixel-canvas" hidden></canvas>
+                  <div class="veil" id="practice-result-veil">
+                    <span class="veil-mark">🎨</span>
+                    <span class="veil-text">green marks the colours you got right</span>
+                  </div>
+                </div>
+                <figcaption id="practice-result-cap">your result</figcaption>
+              </figure>
+            </div>
+
+            <div class="guess-dots" id="practice-dots"></div>
+            <div class="tries-row" id="practice-tries" hidden></div>
+
+            <div class="search" id="practice-search">
+              <div class="search-row">
+                <input
+                  type="text"
+                  id="practice-input"
+                  placeholder="which country? 🎧"
+                  autocomplete="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  aria-label="country guess"
+                />
+                <button class="btn primary" id="practice-go">guess</button>
+              </div>
+              <div class="suggestions" id="practice-suggestions" hidden></div>
+            </div>
+
+            <button class="btn ghost give-up" id="practice-giveup">🏳️ give up</button>
+          </div>
+
+          <ul class="guesses" id="practice-guesses"></ul>
+          <div class="result" id="practice-result" hidden></div>
+        </div>
+
+        <div class="card">
+          <div class="stat-grid" id="practice-stats"></div>
+        </div>
+      </section>
+
+      <!-- ============================= STATS ============================= -->
+      <section class="view" id="view-stats" role="tabpanel" hidden>
+        <div class="card">
+          <div class="card-head">
+            <h2>your brew 📊</h2>
+            <span class="muted" id="stats-who"></span>
+          </div>
+          <div class="stat-grid" id="stats-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>guess distribution 🫘</h2>
+            <span class="muted">how many tries it usually takes</span>
+          </div>
+          <div class="dist" id="stats-dist"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>colour solves 🎨</h2>
+            <span class="muted" id="colour-dist-summary"></span>
+          </div>
+          <div class="dist" id="colour-dist"></div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-head">
+              <h2>most missed 🫠</h2>
+            </div>
+            <ul class="flag-list" id="most-missed"></ul>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>least missed 🌟</h2>
+            </div>
+            <ul class="flag-list" id="least-missed"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================== LEADERBOARD ========================== -->
+      <section class="view" id="view-board" role="tabpanel" hidden>
+        <div class="card">
+          <div class="card-head">
+            <h2>the counter 🏆</h2>
+            <span class="muted">everyone who plays on this machine</span>
+          </div>
+          <ul class="lb" id="leaderboard"></ul>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>pull up a chair 🪑</h2>
+            <span class="muted">add a player</span>
+          </div>
+          <div class="row" style="margin-bottom: 12px">
+            <input type="text" id="new-name" placeholder="name" maxlength="18" style="max-width: 220px" />
+            <button class="btn primary" id="btn-add">＋ add</button>
+          </div>
+          <div class="emoji-picker" id="emoji-picker"></div>
+          <p class="faint" style="margin-bottom: 0">
+            points: <strong>60</strong> for a daily solve, <strong>+12</strong> per guess saved,
+            <strong>+3</strong> per day of streak (max +45). practice pays a little too. ☕
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>house rules 📜</h2>
+          </div>
+          <p class="muted" style="margin-top: 0">
+            <strong>🌅 daily</strong> — one flag a day for everyone, six guesses. after each miss you
+            get the distance to the answer, an arrow pointing at it, and how warm you are. 🎯 means
+            you found it.<br />
+            <strong>🎨 colours</strong> — a second flag a day, hidden. guess flags and the parts that
+            share a colour with the answer turn green. unlimited tries, so the score is how few you
+            needed. no geography at all.
+          </p>
+          <p class="muted">
+            <strong>hotkeys</strong> — <kbd>Tab</kbd> completes the highlighted country,
+            <kbd>↑</kbd>/<kbd>↓</kbd> move through it, <kbd>Enter</kbd> guesses, and
+            <kbd>`</kbd> deals a fresh practice round from anywhere.
+          </p>
+          <div class="row">
+            <button class="btn ghost" id="btn-export">⬇️ export save</button>
+            <button class="btn ghost" id="btn-import">⬆️ import save</button>
+            <button class="btn ghost" id="btn-reset">🧹 reset everything</button>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        brewed with ☕ + 🎧 · flags from flagcdn · a cozy take on flaggle<br />
+        <span id="footer-quote">no ads, no accounts, no rush.</span>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/data.js"></script>
+    <script src="js/palette.js"></script>
+    <script src="js/pixels.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
