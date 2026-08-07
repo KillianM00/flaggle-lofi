@@ -5,12 +5,35 @@
 #   ./run.sh --port N serve on a specific port
 #   ./run.sh --no-open   just serve
 #   ./run.sh test     run the whole test suite (logic + headless browser)
+#   ./run.sh deploy   push to GitHub; Pages redeploys https://kmiller.dev/flaggle-lofi/
+#   ./run.sh test-live  run the browser suite against the deployed site
 set -euo pipefail
 
 cd "$(dirname "$(readlink -f "$0")")"
 
+LIVE_URL="https://kmiller.dev/flaggle-lofi/"
+
 if [[ "${1:-}" == "test" ]]; then
   exec node tools/test-all.mjs "${@:2}"
+fi
+
+if [[ "${1:-}" == "test-live" ]]; then
+  echo "☕ testing ${LIVE_URL}"
+  BASE_URL="$LIVE_URL" exec node tools/test-ui.mjs
+fi
+
+if [[ "${1:-}" == "deploy" ]]; then
+  if [[ -n "$(git status --porcelain)" ]]; then
+    git add -A
+    git commit -q -m "${2:-Update flaggle.lofi}"
+    echo "☕ committed"
+  else
+    echo "☕ nothing new to commit"
+  fi
+  git push -q origin main
+  echo "☕ pushed — GitHub Pages usually goes live within a minute:"
+  echo "   ${LIVE_URL}"
+  exit 0
 fi
 
 PORT=""

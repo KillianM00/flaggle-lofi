@@ -1,5 +1,7 @@
 # ☕ flaggle.lofi
 
+**Play it: [kmiller.dev/flaggle-lofi](https://kmiller.dev/flaggle-lofi/)**
+
 A cozy take on [flaggle.net](https://flaggle.net), with **two flags a day**:
 
 - **🎨 colours** — the real flaggle game. You never see the answer. Guess any flag and
@@ -12,7 +14,14 @@ Plus everything the original doesn't have — a leaderboard, separate streaks pe
 most/least missed flags, practice mode for either style, and a lofi coffee-shop
 soundtrack synthesised in the browser rather than streamed from anywhere.
 
-Runs entirely offline. No accounts, no network calls, no build step.
+No accounts, no tracking, no build step — and once loaded it makes no network calls at
+all, so it works on a plane.
+
+> **Your progress lives in the browser it was made in.** Streaks, stats and the
+> leaderboard are stored in `localStorage`, so your laptop and your phone each keep their
+> own save. Use **⬇️ export save** / **⬆️ import save** on the leaderboard tab to move one
+> across. A genuinely shared leaderboard would need a server, which this deliberately
+> doesn't have.
 
 ## Running it
 
@@ -20,6 +29,16 @@ Runs entirely offline. No accounts, no network calls, no build step.
 ./run.sh              # serves on a free port and opens your browser
 ./run.sh --port 8080  # pick the port
 ./run.sh --no-open    # just serve
+```
+
+## Deploying
+
+It's a static site on GitHub Pages, served from `main`. Any push redeploys it:
+
+```bash
+./run.sh deploy                 # commit everything and push
+./run.sh deploy "your message"  # with a commit message
+./run.sh test-live              # run the browser suite against the live site
 ```
 
 There's also a desktop entry (`flaggle.lofi`) in your applications menu.
@@ -92,6 +111,7 @@ dependencies, which is why they can be tested straight in node.
 ./run.sh test           # everything
 node tools/test-ui.mjs  # just the browser suite
 HEADED=1 node tools/test-ui.mjs   # watch it play
+BASE_URL=https://kmiller.dev/flaggle-lofi/ node tools/test-ui.mjs   # test what's deployed
 ```
 
 Six suites: `data` (dataset vs. flag files), `pixels` (the generated grids — real flags spot-checked

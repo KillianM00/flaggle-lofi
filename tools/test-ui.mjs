@@ -8,7 +8,13 @@ import { ROOT, ok, eq, AssertionError } from './harness.mjs';
 const SHOTS = process.env.SHOT_DIR || path.join(ROOT, 'screenshots');
 fs.mkdirSync(SHOTS, { recursive: true });
 
-const { close: closeServer, url } = await serve(8731);
+// BASE_URL runs the whole suite against a deployed site instead of a local
+// copy — the same checks, but proving what's actually live.
+const REMOTE = process.env.BASE_URL;
+const { close: closeServer, url } = REMOTE
+  ? { close: () => {}, url: REMOTE.replace(/\/$/, '') }
+  : await serve(8731);
+if (REMOTE) console.log(`(testing against ${url})`);
 const d = await newSession({ headless: process.env.HEADED !== '1' });
 
 let pass = 0;
