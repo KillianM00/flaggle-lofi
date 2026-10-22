@@ -1,5 +1,7 @@
 # ☕ flaggle.lofi
 
+[![Tests](https://github.com/KillianM00/flaggle-lofi/actions/workflows/test.yml/badge.svg)](https://github.com/KillianM00/flaggle-lofi/actions/workflows/test.yml)
+
 **Play it: [kmiller.dev/flaggle-lofi](https://kmiller.dev/flaggle-lofi/)**
 
 A cozy take on [flaggle.net](https://flaggle.net), with **two flags a day**:
