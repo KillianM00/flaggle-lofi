@@ -97,7 +97,7 @@ export async function newSession({ headless = true, driverPort = 4444 } = {}) {
           },
         },
         pageLoadStrategy: 'normal',
-        acceptInsecureCerts: true,
+        acceptInsecureCerts: false,
       },
     },
   });

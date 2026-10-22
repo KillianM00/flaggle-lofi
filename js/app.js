@@ -1160,7 +1160,10 @@
       $('view-' + v).hidden = v !== name;
     });
     Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
-      t.classList.toggle('active', t.dataset.view === name);
+      var selected = t.dataset.view === name;
+      t.classList.toggle('active', selected);
+      t.setAttribute('aria-selected', String(selected));
+      t.tabIndex = selected ? 0 : -1;
     });
     if (name === 'stats') renderStats();
     if (name === 'board') renderLeaderboard();
@@ -1232,6 +1235,17 @@
     Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
       t.addEventListener('click', function () {
         showView(t.dataset.view);
+      });
+      t.addEventListener('keydown', function (ev) {
+        var index = VIEWS.indexOf(t.dataset.view);
+        if (ev.key === 'ArrowRight') index = (index + 1) % VIEWS.length;
+        else if (ev.key === 'ArrowLeft') index = (index + VIEWS.length - 1) % VIEWS.length;
+        else if (ev.key === 'Home') index = 0;
+        else if (ev.key === 'End') index = VIEWS.length - 1;
+        else return;
+        ev.preventDefault();
+        showView(VIEWS[index]);
+        $('tab-' + VIEWS[index]).focus();
       });
     });
 

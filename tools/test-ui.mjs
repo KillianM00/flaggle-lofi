@@ -111,6 +111,27 @@ await test('boots with today\'s flag and a fresh profile', async () => {
   ok(/^#\d+ · /.test(s.sub), `puzzle number + date, got "${s.sub}"`);
 });
 
+await test('tabs expose selection and support arrow, Home and End keys', async () => {
+  await boot();
+  for (const [key, expected] of [['ArrowRight', 'colours'], ['End', 'board'], ['ArrowRight', 'daily'], ['ArrowLeft', 'board'], ['Home', 'daily']]) {
+    const state = await d.execute(`
+      var tab = document.querySelector('.tab[aria-selected="true"]');
+      tab.focus();
+      tab.dispatchEvent(new KeyboardEvent('keydown', {key: arguments[0], bubbles: true, cancelable: true}));
+      var selected = document.querySelector('.tab[aria-selected="true"]');
+      var panel = document.getElementById(selected.getAttribute('aria-controls'));
+      return {view: selected.dataset.view, focused: document.activeElement.id,
+        tabbable: document.querySelectorAll('.tab[tabindex="0"]').length,
+        visible: !panel.hidden, label: panel.getAttribute('aria-labelledby')};
+    `, [key]);
+    eq(state.view, expected);
+    eq(state.focused, 'tab-' + expected);
+    eq(state.tabbable, 1);
+    ok(state.visible, 'selected panel is visible');
+    eq(state.label, state.focused);
+  }
+});
+
 await test('autocomplete ranks and filters as you type', async () => {
   await type('daily-input', 'jap');
   const s = await d.execute(`return {

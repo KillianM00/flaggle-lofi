@@ -10,18 +10,25 @@ A cozy take on [flaggle.net](https://flaggle.net), with **two flags a day**:
 - **🌅 daily** — see the flag, name the country in six. Misses give you the distance to
   the answer, an arrow pointing at it, and how warm you are.
 
-Plus everything the original doesn't have — a leaderboard, separate streaks per game,
+Also includes a leaderboard, separate streaks per game,
 most/least missed flags, practice mode for either style, and a lofi coffee-shop
 soundtrack synthesised in the browser rather than streamed from anywhere.
 
-No accounts, no tracking, no build step — and once loaded it makes no network calls at
-all, so it works on a plane.
+No accounts, no tracking, and no build step. Game logic and progress stay in the
+browser; scripts and bundled flag images are loaded from the static site. Offline
+reloads are not guaranteed because the app does not install an offline cache.
 
 > **Your progress lives in the browser it was made in.** Streaks, stats and the
 > leaderboard are stored in `localStorage`, so your laptop and your phone each keep their
 > own save. Use **⬇️ export save** / **⬆️ import save** on the leaderboard tab to move one
 > across. A genuinely shared leaderboard would need a server, which this deliberately
 > doesn't have.
+
+## Preview
+
+![The daily game in the midnight theme](docs/images/gameplay.png)
+
+Captured from the automated browser test using a disposable local profile.
 
 ## Running it
 
@@ -41,7 +48,7 @@ It's a static site on GitHub Pages, served from `main`. Any push redeploys it:
 ./run.sh test-live              # run the browser suite against the live site
 ```
 
-There's also a desktop entry (`flaggle.lofi`) in your applications menu.
+`run.sh` supports local development; desktop shortcuts are machine-specific and are not installed by cloning this repository.
 
 > Serve it over `http://` rather than opening `index.html` directly — browsers sandbox
 > `file://` origins and your streaks wouldn't survive a reload. `run.sh` handles this.
@@ -143,3 +150,9 @@ node tools/test-pixels.mjs
 Country data from [mledoze/countries](https://github.com/mledoze/countries) (ODbL).
 Flags from [flagcdn.com](https://flagcdn.com), public domain. Game concept: flaggle /
 Worldle.
+
+## Licensing
+
+No project-wide license has been selected for the original application code.
+The data and flag sources retain the terms listed under Credits. Contact the
+maintainer before redistributing the application.

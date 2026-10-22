@@ -30,16 +30,16 @@
         </div>
       </header>
 
-      <nav class="tabs" role="tablist">
-        <button class="tab active" data-view="daily" role="tab">🌅 daily</button>
-        <button class="tab" data-view="colours" role="tab">🎨 colours</button>
-        <button class="tab" data-view="practice" role="tab">🎯 practice</button>
-        <button class="tab" data-view="stats" role="tab">📊 stats</button>
-        <button class="tab" data-view="board" role="tab">🏆 leaderboard</button>
+      <nav class="tabs" role="tablist" aria-label="Game modes and progress">
+        <button class="tab active" id="tab-daily" data-view="daily" role="tab" aria-controls="view-daily" aria-selected="true" tabindex="0">🌅 daily</button>
+        <button class="tab" id="tab-colours" data-view="colours" role="tab" aria-controls="view-colours" aria-selected="false" tabindex="-1">🎨 colours</button>
+        <button class="tab" id="tab-practice" data-view="practice" role="tab" aria-controls="view-practice" aria-selected="false" tabindex="-1">🎯 practice</button>
+        <button class="tab" id="tab-stats" data-view="stats" role="tab" aria-controls="view-stats" aria-selected="false" tabindex="-1">📊 stats</button>
+        <button class="tab" id="tab-board" data-view="board" role="tab" aria-controls="view-board" aria-selected="false" tabindex="-1">🏆 leaderboard</button>
       </nav>
 
       <!-- ============================= DAILY ============================= -->
-      <section class="view" id="view-daily" role="tabpanel">
+      <section class="view" id="view-daily" role="tabpanel" aria-labelledby="tab-daily" tabindex="0">
         <div class="card">
           <div class="card-head">
             <h2 id="daily-title">today's flag</h2>
@@ -81,7 +81,7 @@
       </section>
 
       <!-- ============================ COLOURS ============================ -->
-      <section class="view" id="view-colours" role="tabpanel" hidden>
+      <section class="view" id="view-colours" role="tabpanel" aria-labelledby="tab-colours" tabindex="0" hidden>
         <div class="card">
           <div class="card-head">
             <h2 id="colours-title">today's colours</h2>
@@ -154,7 +154,7 @@
       </section>
 
       <!-- ============================ PRACTICE =========================== -->
-      <section class="view" id="view-practice" role="tabpanel" hidden>
+      <section class="view" id="view-practice" role="tabpanel" aria-labelledby="tab-practice" tabindex="0" hidden>
         <div class="card">
           <div class="card-head">
             <h2>practice 🎯</h2>
@@ -229,7 +229,7 @@
       </section>
 
       <!-- ============================= STATS ============================= -->
-      <section class="view" id="view-stats" role="tabpanel" hidden>
+      <section class="view" id="view-stats" role="tabpanel" aria-labelledby="tab-stats" tabindex="0" hidden>
         <div class="card">
           <div class="card-head">
             <h2>your brew 📊</h2>
@@ -271,7 +271,7 @@
       </section>
 
       <!-- ========================== LEADERBOARD ========================== -->
-      <section class="view" id="view-board" role="tabpanel" hidden>
+      <section class="view" id="view-board" role="tabpanel" aria-labelledby="tab-board" tabindex="0" hidden>
         <div class="card">
           <div class="card-head">
             <h2>the counter 🏆</h2>
@@ -327,7 +327,7 @@
       </footer>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <script src="js/data.js"></script>
     <script src="js/palette.js"></script>
