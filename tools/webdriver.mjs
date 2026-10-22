@@ -108,6 +108,13 @@ export async function newSession({ headless = true, driverPort = 4444 } = {}) {
     async go(u) {
       return call(base, 'POST', `/session/${sid}/url`, { url: u });
     },
+    async click(selector) {
+      const element = await call(base, 'POST', `/session/${sid}/element`, {
+        using: 'css selector', value: selector,
+      });
+      const id = element['element-6066-11e4-a52e-4f735466cecf'];
+      return call(base, 'POST', `/session/${sid}/element/${id}/click`, {});
+    },
     async execute(script, args = []) {
       return call(base, 'POST', `/session/${sid}/execute/sync`, { script, args });
     },

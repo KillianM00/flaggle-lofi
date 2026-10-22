@@ -557,7 +557,9 @@ await test('theme toggle flips to midnight roast and sticks', async () => {
 });
 
 await test('the lofi player actually starts an audio graph', async () => {
-  await click('#btn-sound');
+  // Web Audio activation must come from a trusted user gesture.
+  await d.click('#btn-sound');
+  await d.waitFor("window.LofiAudio._internals().ctx?.state === 'running'", { label: 'audio context activation' });
   const s = await d.executeAsync(`var done = arguments[arguments.length - 1];
     setTimeout(function () {
       var i = window.LofiAudio._internals();
